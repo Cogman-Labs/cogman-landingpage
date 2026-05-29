@@ -2,6 +2,7 @@
 import Layout from '@/layouts/Layout.astro'
 import { getLangFromUrl, useTranslations } from '@/i18n/utils'
 import LanguageSelector from '@/components/LanguageSelector.astro'
+import FeedbackWidget from '@/components/FeedbackWidget.astro'
 import { Atom, Brain, Server, Shield, Mail, MapPin, FileText, Users, Box } from 'lucide-react'
 
 const lang = getLangFromUrl(Astro.url)
@@ -201,6 +202,9 @@ const products = ['1']
 				</p>
 			</div>
 		</footer>
+
+		<!-- Feedback Widget -->
+		<FeedbackWidget />
 	</main>
 
 	<style>

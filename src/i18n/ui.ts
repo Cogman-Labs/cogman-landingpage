@@ -21,7 +21,7 @@ export const ui = {
 				subtitle: 'The problems we are trying to solve',
 				'1': {
 					title: 'LLM Applications',
-					description: 'Building real products with large language models - RAG systems, conversational AI, and intelligent automation.'
+					description: 'Building real products with large language models - memory systems, conversational AI, and intelligent automation.'
 				},
 				'2': {
 					title: 'AI Agents',
@@ -91,7 +91,7 @@ export const ui = {
 				subtitle: 'Những vấn đề chúng tôi đang giải quyết',
 				'1': {
 					title: 'Ứng dụng LLM',
-					description: 'Xây dựng sản phẩm thật với mô hình ngôn ngữ lớn - hệ thống RAG, AI đàm thoại, và tự động hóa thông minh.'
+					description: 'Xây dựng sản phẩm thật với mô hình ngôn ngữ lớn - hệ thống memory, AI đàm thoại, và tự động hóa thông minh.'
 				},
 				'2': {
 					title: 'AI Agents',

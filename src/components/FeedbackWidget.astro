@@ -1,0 +1,131 @@
+---
+---
+
+<div id="feedback-widget" class="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-2 shadow-lg">
+	<button
+		id="btn-like"
+		class="flex items-center gap-1.5 text-gray-400 hover:text-green-600 transition-colors"
+		aria-label="Like"
+	>
+		<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+			<path d="M7 10v12"></path>
+			<path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"></path>
+		</svg>
+	</button>
+	<div class="w-px h-5 bg-gray-200"></div>
+	<button
+		id="btn-dislike"
+		class="flex items-center gap-1.5 text-gray-400 hover:text-red-600 transition-colors"
+		aria-label="Dislike"
+	>
+		<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+			<path d="M17 14V2"></path>
+			<path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22h0a3.13 3.13 0 0 1-3-3.88Z"></path>
+		</svg>
+	</button>
+</div>
+
+<script>
+	const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz0nLCERVHhAVlFmaNnia37fBVploDRsYu3ibGOcMyoH6GG30Vg5UtXaYRR7NWhb4lF/exec';
+	const STORAGE_KEY = 'feedback_votes';
+	const USER_ID_KEY = 'feedback_user_id';
+
+	// Generate or retrieve user ID
+	function getUserId() {
+		let userId = localStorage.getItem(USER_ID_KEY);
+		if (!userId) {
+			userId = crypto.randomUUID();
+			localStorage.setItem(USER_ID_KEY, userId);
+		}
+		return userId;
+	}
+
+	function getUserVote() {
+		const pageId = window.location.pathname;
+		try {
+			const saved = localStorage.getItem(STORAGE_KEY);
+			if (saved) {
+				const votes = JSON.parse(saved);
+				return votes[pageId] || null;
+			}
+		} catch (e) {}
+		return null;
+	}
+
+	function setUserVote(vote) {
+		const pageId = window.location.pathname;
+		try {
+			let votes = {};
+			const saved = localStorage.getItem(STORAGE_KEY);
+			if (saved) votes = JSON.parse(saved);
+			votes[pageId] = vote;
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(votes));
+		} catch (e) {}
+	}
+
+	function updateUI() {
+		const btnLike = document.getElementById('btn-like');
+		const btnDislike = document.getElementById('btn-dislike');
+		const userVote = getUserVote();
+
+		btnLike?.classList.toggle('text-green-600', userVote === 'like');
+		btnLike?.classList.toggle('text-gray-400', userVote !== 'like');
+		btnDislike?.classList.toggle('text-red-600', userVote === 'dislike');
+		btnDislike?.classList.toggle('text-gray-400', userVote !== 'dislike');
+	}
+
+	function sendVote(type) {
+		const pageId = window.location.pathname;
+		const userId = getUserId();
+		try {
+			fetch(GOOGLE_SCRIPT_URL, {
+				method: 'POST',
+				body: JSON.stringify({
+					page: pageId,
+					userId: userId,
+					vote: type
+				})
+			}).catch(() => {});
+		} catch (e) {}
+	}
+
+	function handleLike() {
+		const currentVote = getUserVote();
+		if (currentVote === 'like') return;
+
+		sendVote('like');
+		setUserVote('like');
+		updateUI();
+	}
+
+	function handleDislike() {
+		const currentVote = getUserVote();
+		if (currentVote === 'dislike') return;
+
+		sendVote('dislike');
+		setUserVote('dislike');
+		updateUI();
+	}
+
+	function initFeedback() {
+		const btnLike = document.getElementById('btn-like');
+		const btnDislike = document.getElementById('btn-dislike');
+
+		if (btnLike) {
+			const newBtnLike = btnLike.cloneNode(true);
+			btnLike.parentNode?.replaceChild(newBtnLike, btnLike);
+			newBtnLike.addEventListener('click', handleLike);
+		}
+
+		if (btnDislike) {
+			const newBtnDislike = btnDislike.cloneNode(true);
+			btnDislike.parentNode?.replaceChild(newBtnDislike, btnDislike);
+			newBtnDislike.addEventListener('click', handleDislike);
+		}
+
+		updateUI();
+	}
+
+	document.addEventListener('DOMContentLoaded', initFeedback);
+	document.addEventListener('astro:page-load', initFeedback);
+</script>
