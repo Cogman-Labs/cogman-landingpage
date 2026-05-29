@@ -8,10 +8,13 @@ import robotsTxt from 'astro-robots-txt';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://astro-full-starter.pages.dev/',
+  site: 'https://cogmanlabs.com/',
+  devToolbar: {
+    enabled: false
+  },
   i18n: {
     defaultLocale: 'en',
-    locales: ['en', 'es'],
+    locales: ['en', 'vi'],
     routing: {
       prefixDefaultLocale: false
     }
@@ -21,7 +24,7 @@ export default defineConfig({
       defaultLocale: 'en',
       locales: {
         en: 'en-US',
-        es: 'es-ES'
+        vi: 'vi-VN'
       }
     }
   }), robotsTxt()],
